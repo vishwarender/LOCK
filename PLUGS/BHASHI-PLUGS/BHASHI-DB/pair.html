@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://i.ibb.co/M5vZkSR/Whats-App-Image-2024-12-05-at-9-46-21-AM.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+        }
+
+        .blur-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            backdrop-filter: blur(15px);
+            background: linear-gradient(
+                135deg,
+                rgba(0, 0, 0, 0.6) 0%,
+                rgba(0, 0, 0, 0.4) 100%
+            );
+            animation: gradientShift 10s ease infinite;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            max-width: 600px;
+            width: 90%;
+            margin: 0 auto;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                0 0 20px rgba(0, 0, 0, 0.1),
+                inset 0 0 15px rgba(255, 255, 255, 0.5);
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: containerFloat 1s ease-out;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 40px rgba(0, 0, 0, 0.25),
+                0 0 25px rgba(0, 0, 0, 0.15),
+                inset 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+
+        h1 {
+            color: #1a1a1a;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            animation: titleFloat 1s ease-out;
+        }
+
+        p {
+            text-align: center;
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 12px;
+            border: 2px solid #e0e0e0;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 
+                inset 0 2px 4px rgba(0, 0, 0, 0.05),
+                0 2px 4px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 
+                0 0 0 3px rgba(76, 175, 80, 0.2),
+                inset 0 2px 4px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .button {
+            background: linear-gradient(145deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 
+                0 4px 15px rgba(76, 175, 80, 0.3),
+                0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                120deg,
+                transparent,
+                rgba(255, 255, 255, 0.2),
+                transparent
+            );
+            transition: 0.5s;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 6px 20px rgba(76, 175, 80, 0.4),
+                0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:hover::before {
+            left: 100%;
+        }
+
+        .button:active {
+            transform: translateY(1px);
+            box-shadow: 
+                0 2px 10px rgba(76, 175, 80, 0.3),
+                0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .button:disabled {
+            background: linear-gradient(145deg, #cccccc, #bbbbbb);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-message, .error-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            font-weight: 500;
+            animation: messageSlide 0.3s ease-out;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .status-message {
+            background: linear-gradient(145deg, #e7f5e7, #d8f0d8);
+            border: 2px solid #4CAF50;
+            color: #2d662f;
+        }
+
+        .error-message {
+            background: linear-gradient(145deg, #f8d7da, #f5c6cb);
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
+        @keyframes containerFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes titleFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes messageSlide {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .button.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .button.loading::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin: -10px 0 0 -10px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 95%;
+                padding: 20px;
+            }
+
+            h1 { font-size: 2em; }
+
+            .button { padding: 12px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="blur-background"></div>
+    <div class="container">
+        <h1>Session Generator</h1>
+        <p>Enter your phone number to generate a session:</p>
+        <form id="sessionForm">
+            <input type="text" id="phoneNumber" class="input-field" placeholder="Enter phone number with country code (e.g., +94724826875)" required>
+            <button type="submit" class="button">Generate Session</button>
+        </form>
+        <div id="statusMessage" class="status-message"></div>
+        <div id="errorMessage" class="error-message"></div>
+    </div>
+
+    <script>
+        async function checkIfConnected() {
+            try {
+                const response = await fetch(`/session`);
+                const data = await response.json();
+                
+                if (data.message === "connected") {
+                    const statusMessage = document.getElementById('statusMessage');
+                    statusMessage.textContent = "Session already connected!";
+                    statusMessage.style.display = 'block';
+                    document.getElementById('phoneNumber').disabled = true;
+                    document.querySelector('.button').disabled = true;
+                }
+            } catch (err) {
+                console.error('Error checking session:', err);
+            }
+        }
+
+        document.getElementById('sessionForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const statusMessage = document.getElementById('statusMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const submitButton = document.querySelector('.button');
+
+            // Clear previous messages
+            statusMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+
+            // Basic phone number validation
+            if (!/^\+?\d{10,}$/.test(phoneNumber)) {
+                errorMessage.textContent = 'Please enter a valid phone number with country code (minimum 10 digits)';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            // Show loading state
+            submitButton.disabled = true;
+            submitButton.classList.add('loading');
+            submitButton.textContent = '';
+
+            try {
+                const response = await fetch(`/session?number=${phoneNumber}`);
+                const data = await response.json();
+
+                if (data.code && data.code !== "Try After Few Minutes") {
+                    statusMessage.textContent = `Your pairing code: ${data.code}`;
+                    statusMessage.style.display = 'block';
+                } else if (data.message === "connected") {
+                    statusMessage.textContent = "Session connected successfully!";
+                    statusMessage.style.display = 'block';
+                    document.getElementById('phoneNumber').disabled = true;
+                    submitButton.disabled = true;
+                } else {
+                    errorMessage.textContent = data.code || 'Failed to generate code. Please try again later.';
+                    errorMessage.style.display = 'block';
+                }
+            } catch (err) {
+                errorMessage.textContent = 'An error occurred. Please try again later.';
+                errorMessage.style.display = 'block';
+            } finally {
+                submitButton.disabled = false;
+                submitButton.classList.remove('loading');
+                submitButton.textContent = 'Generate Session';
+            }
+        });
+
+        // Check connection status when page loads
+        checkIfConnected();
+    </script>
+</body>
+</html>
