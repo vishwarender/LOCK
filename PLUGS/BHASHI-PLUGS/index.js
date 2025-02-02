@@ -177,7 +177,7 @@ function findSimilarCommands(events, cmdName, threshold = 3) {
 
 ${newUpdateMessage}
 
-> ©𝖻𝗁𝖺𝗌𝗁𝗂𝖼𝗈𝖽𝖾𝗋𝗌 >_\n\n`;
+> ©𝖻𝗁𝖺𝗌𝗁𝗂𝖼𝗈𝖽𝖾𝗋𝗌 >_`;
                 conn.sendMessage("94772266821@s.whatsapp.net", { text: updateMessage })
                     .then(() => console.log('✅ Update message sent to the owner.'))
                     .catch(error => console.error('❌ Error sending update message:', error));
